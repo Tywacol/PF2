@@ -1,19 +1,22 @@
 #lang racket
 
 ; TP5
-(require "utils.rkt" "adt-turtle.rkt" "adt-turtle-hard.rkt")
+(require "utils.rkt" "adt-turtle-hard.rkt")
 
 ; Ex1
 (define (protected-value x passwd)
-  (let ((p passwd) (v x))
-    (define (this methode . Largs)
+  (let ((p passwd) (v x) (first-x x))
+    (define (askPasswd)
+      (printf "Gimme a password : ")
+      (define inputPswd (read))
+      (if (equal? p inputPswd)
+          #t
+          (begin (printf "Acces denied !") #f)))    
+    (define (this methode . Largs)      
       (case methode
         ((getValue) v)
-        ((setValue) (begin (printf "Gimme a password : ")
-                           (define inputPswd (read))
-                           (if (equal? p inputPswd)
-                               (set! v (car Largs))
-                               (printf "Acces denied !"))))
+        ((setValue) (when (askPasswd) (set! v (car Largs))))                      
+        ((reset) (when (askPasswd) (set! v first-x)))
         (else (error "Methode inconnue" methode))))
     this))
 
@@ -46,38 +49,38 @@
 (define (is-out? t)
   (define p (send t position))
   (or (< (car p) -250) (< (cadr p) -250) (> (car p) 250) (> (cadr p) 250)))
- 
-  
+
+
 
 (define (poursuite)
   (define (rd-angl) (random 360))
-  (define t1 (new turtle%))
+  (define t1 (new turtle% (COLOR "red")))
   (define t2 (new turtle%))
   (send t1 init '(0 0) (rd-angl))
   (send t2 init '(-200 200) 0)
   (while (and (not (<= (distance t1 t2) 2)) (not (is-out? t1)))
          (sleep 0.008)
          (send t1 set-heading (rd-angl))
-         (send t1 forward 2)
+         (send t1 forward 10)
          (send t2 toward (send t1 position))
          (send t2 forward 1)))
-         
+
 (poursuite)
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
